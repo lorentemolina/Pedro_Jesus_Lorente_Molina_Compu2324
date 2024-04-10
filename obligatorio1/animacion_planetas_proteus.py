@@ -55,10 +55,10 @@ file_out = "heliocentrico" # Nombre del fichero de salida (sin extensión)
 #file_out = "geocentrico" # Nombre del fichero de salida (sin extensión)
 
 # Límites de los ejes X e Y
-x_min = -5  #50
-x_max = 5
-y_min = -5
-y_max = 5
+x_min = -50  #50
+x_max = 50
+y_min = -50
+y_max = 50
 
 interval = 100 # Tiempo entre fotogramas en milisegundos
 show_trail = True # Muestra la "estela" del planeta

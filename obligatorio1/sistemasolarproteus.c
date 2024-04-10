@@ -35,14 +35,19 @@ void acceleration(double *positions, double *acc, int n, Planet *planet_data) {
 }
 
 // Función para inicializar los valores de posiciones y velocidades
-void initialize_positions_and_velocities(double *positions, double *previous_positions, double *velocitiesV, Planet *planet_data) {
-    for (int i = 0; i < 9; i++) {
+void initialize_variables(double *positions, double *previous_positions, double *velocitiesV, int *orbit, double *periods, int n, Planet *planet_data) {
+    for (int i = 0; i < n; i++) {
         positions[i*2] = planet_data[i].distance; // Posición inicial en x 
         positions[i*2 + 1] = 0.0; // Posición inicial en y (0 en este caso)
+
         previous_positions[i*2] = positions[i*2];  // Posición previa en x inicializada para la comprobación de las vueltas
         previous_positions[i*2 + 1] = positions[i*2 + 1]; // Posición previa en y inicializada para la comprobación de las vueltas
+
         velocitiesV[i*2] = 0.0; // Velocidad inicial en x (0 en este caso)
         velocitiesV[i*2 + 1] = planet_data[i].velocity; // Velocidad inicial en y
+
+        orbit[i] = 0; // Órbita completa
+        periods[i] = 0.0; // Periodos
     }
 }
 
@@ -88,6 +93,14 @@ double calculate_angular_momentum(double *positions, double *velocitiesV, int n,
 }
 
 int main() {
+
+    //Para simular un número N de planetas
+    int num_planets;
+
+    // Solicitar al usuario el número de planetas
+    printf("Ingrese el número de planetas que desea simular (incluyendo el Sol): ");
+    scanf("%d", &num_planets);
+
      // Datos de los planetas (reescalados)
     Planet planet_data[] = {
         {1.0, 0.0, 0.0}, //Sol
@@ -106,23 +119,21 @@ int main() {
     double h = 1.0 / 1000; //intervalo de tiempo
     double t = 0.0; //tiempo
 
-    // Inicialización de posiciones y velocidadesv
-    double positions[18];
-    double previous_positions[18];
-    double velocitiesV[18];
-    double velocitiesW[18];
-    initialize_positions_and_velocities(positions, previous_positions, velocitiesV, planet_data);
+    // Inicialización de posiciones y velocidadesv (además de las variables para determinar el periodo)
+    double positions[num_planets*2];
+    double previous_positions[num_planets*2];
+    double velocitiesV[num_planets*2];
+    double velocitiesW[num_planets*2];
+    double periods[num_planets];
+    int orbits[num_planets];
+    initialize_variables(positions, previous_positions, velocitiesV, orbits, periods, num_planets, planet_data);
 
     // Lista para almacenar las órbitas relativas de los planetas respecto al Sol y la Tierra
-    double relative_orbitsH[timesteps][9][2]; 
-    double relative_orbitsG[timesteps][9][2]; 
-
-    // Variables para determinar y comprobar el periodo de los planetas
-    int orbit[9] = {0}; //comprobación de órbita completada (sin contar el Sol)
-    double periods[9] = {0}; //periodo
+    double relative_orbitsH[timesteps][num_planets][2]; 
+    double relative_orbitsG[timesteps][num_planets][2]; 
 
     // Simulación utilizando el algoritmo de Verlet en velocidad
-    double acc[18];
+    double acc[num_planets*2];
     double V;      // Potencial gravitatorio
     double T;      // Energía cinética
     double E;      // Energía total
@@ -136,23 +147,23 @@ int main() {
     FILE *f5 = fopen("periodos.dat", "w");
 
      // Calculamos la aceleración inicial (t=0.0)
-    acceleration(positions, acc, 9, planet_data);
+    acceleration(positions, acc, num_planets, planet_data);
 
     for (int k = 0; k < timesteps; k++) {
 
          // Paso 0: Cálculo de la energía cinética y potencial para obtener la energía total en cada iteracción
-        T = calculate_kinetic_energy(velocitiesV, 9, planet_data);   //inicializo a 0.0 dentro de la función
-        V = calculate_gravitational_potential(positions, 9, planet_data);  //inicializo a 0.0 dentro de la función
+        T = calculate_kinetic_energy(velocitiesV, num_planets, planet_data);   //inicializo a 0.0 dentro de la función
+        V = calculate_gravitational_potential(positions, num_planets, planet_data);  //inicializo a 0.0 dentro de la función
         E = T + V;
         
         // y cálculo del momento angular total en cada iteracción
-        L = calculate_angular_momentum(positions, velocitiesV, 9, planet_data);  //inicializo a 0.0 dentro de la función
+        L = calculate_angular_momentum(positions, velocitiesV, num_planets, planet_data);  //inicializo a 0.0 dentro de la función
 
         // Periodo de los planetas
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < num_planets; i++) {
             // Verifica si se cumple la condición para determinar una órbita completa del planeta
-            if (positions[i*2] > 0.0 && positions[i*2 + 1] * previous_positions[i*2 + 1] < 0.0 && i != 0 && k > 100 && orbit[i] == 0) {
-                orbit[i] = 1; // Marca la vuelta como completada
+            if (positions[i*2] > 0.0 && positions[i*2 + 1] * previous_positions[i*2 + 1] < 0.0 && i != 0 && k > 100 && orbits[i] == 0) {
+                orbits[i] = 1; // Marca la vuelta como completada
                 periods[i] = k * h * Ft * 1/3600 * 1/24; // Calcula el periodo del planeta en días
 
             // Escribe el periodo calculado en el archivo
@@ -162,7 +173,7 @@ int main() {
 
        
         // Paso 1: Calcular las nuevas posiciones y velocidadesw
-        for (int j = 0; j < 9; j++) {
+        for (int j = 0; j < num_planets; j++) {
 
             previous_positions[j*2 + 1] = positions[j*2 + 1]; //para usarlo en la comprobación del periodo
 
@@ -174,22 +185,22 @@ int main() {
         }
 
         // Paso 2: Calcular las nuevas aceleraciones
-        acceleration(positions, acc, 9, planet_data);
+        acceleration(positions, acc, num_planets, planet_data);
 
         // Paso 3: Calcular las nuevas velocidadesv
-        for (int j = 0; j < 9; j++) {
+        for (int j = 0; j < num_planets; j++) {
             velocitiesV[j*2] = velocitiesW[j*2] + 0.5 * acc[j*2] * h;
             velocitiesV[j*2 + 1] = velocitiesW[j*2 +1] + 0.5 * acc[j*2 + 1] * h;
         }
 
         // Paso 4: Calcular la órbita relativa de los planetas respecto al Sol (modelo heliocéntrico)
-        for (int j = 0; j < 9; j++) {
+        for (int j = 0; j < num_planets; j++) {
             relative_orbitsH[k][j][0] = positions[j*2];      
             relative_orbitsH[k][j][1] = positions[j*2 + 1];   
         }
 
         // y respecto a la Tierra (modelo geocéntrico)
-        for (int j = 0; j < 9; j++) {
+        for (int j = 0; j < num_planets; j++) {
             relative_orbitsG[k][j][0] = (positions[j*2] - positions[3*2]);  
             relative_orbitsG[k][j][1] = (positions[j*2 + 1] - positions[3*2 +1]); 
         }
@@ -199,7 +210,7 @@ int main() {
             fprintf(f, "\n");
             fprintf(f4, "\n");
         }
-        for (int j = 0; j < 9; j++) {
+        for (int j = 0; j < num_planets; j++) {
             fprintf(f, "%.10f,%.10f\n", relative_orbitsH[k][j][0], relative_orbitsH[k][j][1]);
             fprintf(f4, "%.10f,%.10f\n", relative_orbitsG[k][j][0], relative_orbitsG[k][j][1]);
         }
