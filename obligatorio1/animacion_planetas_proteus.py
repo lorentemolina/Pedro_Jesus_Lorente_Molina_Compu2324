@@ -71,7 +71,7 @@ dpi = 150 # Calidad del vídeo de salida (dots per inch)
 # Puede ser un número (el radio de todos los planetas) o una lista con
 # el radio de cada uno
 #planet_radius = 1 
-planet_radius = [0.11, 0.0004, 0.0009, 0.001, 0.0005]
+planet_radius = [0.11, 0.0004, 0.0009, 0.001, 0.0005, 0.01, 0.008, 0.0036, 0.0035]
 
 
 # Lectura del fichero de datos
@@ -137,10 +137,10 @@ planet_points = list()
 planet_trails = list()
 
 # Define los colores de cada planeta
-colores = ['yellow', 'gray', 'orange', 'blue', 'red']  #modificado para poner colores
+colores = ['yellow', 'gray', 'orange', 'blue', 'red', 'brown', 'olive', 'purple', 'cyan']  #modificado para poner colores
 
 # Definimos los nombres de los cuerpos
-planet_names = ["Sol","Mercurio", "Venus", "Tierra", "Marte"]
+planet_names = ["Sol","Mercurio", "Venus", "Tierra", "Marte", "Júpiter", "Saturno", "Urano", "Neptuno"]
 
 for i, (planet_pos, radius) in enumerate(zip(frames_data[0], planet_radius)):
     x, y = planet_pos
