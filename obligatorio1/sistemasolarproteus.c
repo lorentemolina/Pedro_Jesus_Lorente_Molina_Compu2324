@@ -114,9 +114,20 @@ int main() {
         {1.024e26 / Ms, 4.495e12 / distST, 5.447e3 / distST * Ft}  // Neptuno
     };
 
+    // Calcular el número de Tierras necesarias
+    int tierras_extra = num_planets - 9;
+    if (tierras_extra < 0) {
+        tierras_extra = 0;
+    }
+
+    // Agregar Tierras adicionales después de Neptuno
+    for (int i = 0; i < tierras_extra; i++) {
+        planet_data[9 + i] = planet_data[3]; // Copiar los datos de la Tierra
+    }
+
     // Parámetros de simulación
-    int timesteps = 50000; // Pasos calculados en la simulación
-    double h = 1.0 / 1000; // Intervalo de tiempo
+    int timesteps = 10000; // Pasos calculados en la simulación
+    double h = 1.0 / 100; // Intervalo de tiempo
     double t = 0.0; // Tiempo
 
     // Inicialización de posiciones y velocidades

@@ -5,10 +5,10 @@
 
 #define dim 30 // Dimensiones del retículo
 #define iter 200 // Número de iteraciones
-#define T 0.01
+#define T 0.01 //Temperatura
 
 int rnd_int() {
-    return rand() % 2 == 0 ? 1 : -1;
+    return rand() % 2 == 0 ? 1 : -1;  // Para generar aleatoriamente 1 o -1
 }
 
 int main() {
@@ -19,7 +19,7 @@ int main() {
 
     int s[dim][dim];
 
-    // Generar configuración inicial del retículo
+    // Generar configuración inicial de la matriz
     for (int i = 0; i < dim; i++) {
         for (int j = 0; j < dim; j++) {
             s[i][j] = rnd_int();

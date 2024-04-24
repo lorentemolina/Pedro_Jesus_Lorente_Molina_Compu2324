@@ -49,10 +49,10 @@ import numpy as np
 
 # Parámetros
 # ========================================
-file_in = "planets_data.dat" # Nombre del fichero de datos
-#file_in = "geocent.dat" # Nombre del fichero de datos
-file_out = "heliocentrico" # Nombre del fichero de salida (sin extensión)
-#file_out = "geocentrico" # Nombre del fichero de salida (sin extensión)
+#file_in = "planets_data.dat" # Nombre del fichero de datos
+file_in = "geocent.dat" # Nombre del fichero de datos
+#file_out = "heliocentrico" # Nombre del fichero de salida (sin extensión)
+file_out = "geocentrico" # Nombre del fichero de salida (sin extensión)
 
 # Límites de los ejes X e Y
 x_min = -50  #50
