@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <omp.h>
 
-#define dim 30 // Dimensiones del retículo
+#define dim 80 // Dimensiones del retículo
 #define iter 200 // Número de iteraciones
-#define T 0.01 //Temperatura
+#define T 2.2 //Temperatura
 
 int rnd_int() {
     return rand() % 2 == 0 ? 1 : -1;  // Para generar aleatoriamente 1 o -1
