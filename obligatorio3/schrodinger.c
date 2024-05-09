@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 #include "complex.h"
 
 #define PI 3.14159265358979323846
@@ -15,6 +16,14 @@ fcomplex A[MAX], b[MAX], alpha[MAX], beta[MAX], chi[MAX]; // Coeficientes
 
 int main() {
 
+    // Para observar los tiempos de compilación
+
+    clock_t start_time, end_time;
+    double total_time;
+
+    // Marcamos el tiempo de inicio
+    start_time = clock();
+
     // Abrimos los ficheros de salida
 
     FILE *poten;
@@ -23,6 +32,7 @@ int main() {
     modfonda = fopen("funcion_de_onda.dat", "w"); // módulo de la función de onda
     FILE *normfonda;
     normfonda = fopen("norma.dat", "w"); // norma de la función de onda
+    FILE *time = fopen("tiempo_ejecucion.txt", "w"); // para obtener el tiempo que tarda en ejecutarse
 
     // Definimos los parámetros iniciales
 
@@ -101,6 +111,17 @@ int main() {
     fclose(modfonda);
     fclose(poten);
     fclose(normfonda);
+
+    // Marcamos el tiempo de finalización
+    end_time = clock();
+
+     // Calculamos el tiempo total de compilación
+    total_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+
+    // Imprimimos el tiempo total de compilación
+    fprintf(time, "%.4f\n", total_time);
+
+    fclose(time);
 
     return 0;
 }
