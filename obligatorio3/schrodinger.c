@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
+#include <omp.h>
 #include "complex.h"
 
 #define PI 3.14159265358979323846

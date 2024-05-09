@@ -1,0 +1,1 @@
+planetas+Sol: 9    Tiempo de ejecución: 7.4630

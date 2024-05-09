@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h> // Para malloc, free
+#include <time.h>
+#include <omp.h>
 
 #define G 6.67430e-11    // Constante de gravitación universal en m^3/kg/s^2
 #define Ms 1.989e30      // Masa del Sol en kg
@@ -94,6 +97,13 @@ double calculate_angular_momentum(double positions[][2], double velocitiesV[][2]
 
 int main() {
 
+    // Para observar los tiempos de compilación
+    clock_t start_time, end_time;
+    double total_time;
+
+    // Marcamos el tiempo de inicio
+    start_time = clock();
+
     // Para simular un número N de planetas
     int num_planets;
 
@@ -101,8 +111,15 @@ int main() {
     printf("Ingrese el número de planetas que desea simular (incluyendo el Sol): ");
     scanf("%d", &num_planets);
 
+    // Reservar memoria para los datos de los planetas
+    Planet *planet_data = (Planet *)malloc(num_planets * sizeof(Planet));
+    if (planet_data == NULL) {
+        printf("Error al reservar memoria para planet_data\n");
+        return -1;
+    }
+
     // Datos de los planetas (reescalados)
-    Planet planet_data[] = {
+    Planet initial_planet_data[] = {
         {1.0, 0.0, 0.0}, // Sol
         {3.301e23 / Ms, 5.791e10 / distST, 4.736e4 / distST * Ft}, // Mercurio
         {4.867e24 / Ms, 1.082e11 / distST, 3.502e4 / distST * Ft}, // Venus
@@ -114,32 +131,57 @@ int main() {
         {1.024e26 / Ms, 4.495e12 / distST, 5.447e3 / distST * Ft}  // Neptuno
     };
 
-    // Calcular el número de Tierras necesarias
-    int tierras_extra = num_planets - 9;
-    if (tierras_extra < 0) {
-        tierras_extra = 0;
+    // Copiar los datos iniciales de los planetas
+    for (int i = 0; i < 8; i++) {
+        planet_data[i] = initial_planet_data[i];
     }
 
-    // Agregar Tierras adicionales después de Neptuno
-    for (int i = 0; i < tierras_extra; i++) {
-        planet_data[9 + i] = planet_data[3]; // Copiar los datos de la Tierra
+    // Añadir planetas adicionales al sistema solar
+    int num_extra_planets = num_planets - 9; // Calculamos el número de planetas extras
+
+    if (num_extra_planets >= 1) {
+    for (int i = 9; i < num_planets; i++) {
+        planet_data[i].distance = initial_planet_data[i-1].distance + initial_planet_data[3].distance; // Distancia del planeta anterior más la distancia de la Tierra
+        planet_data[i].mass = initial_planet_data[3].mass; // Masa igual a la de la Tierra
+        planet_data[i].velocity = initial_planet_data[3].velocity; // Velocidad igual a la de la Tierra
+        }
     }
 
     // Parámetros de simulación
-    int timesteps = 10000; // Pasos calculados en la simulación
+    int timesteps = 100000; // Pasos calculados en la simulación
     double h = 1.0 / 100; // Intervalo de tiempo
     double t = 0.0; // Tiempo
 
     // Inicialización de posiciones y velocidades
-    double positions[num_planets][2];
-    double previous_positions[num_planets][2];
-    double velocitiesV[num_planets][2];
-    double periods[num_planets];
-    int orbits[num_planets];
+    double (*positions)[2] = malloc(num_planets * sizeof(*positions));
+    double (*previous_positions)[2] = malloc(num_planets * sizeof(*previous_positions));
+    double (*velocitiesV)[2] = malloc(num_planets * sizeof(*velocitiesV));
+    int *orbits = malloc(num_planets * sizeof(*orbits));
+    double *periods = malloc(num_planets * sizeof(*periods));
+    if (positions == NULL || previous_positions == NULL || velocitiesV == NULL || orbits == NULL || periods == NULL) {
+        printf("Error al reservar memoria para las variables de simulación\n");
+        free(planet_data);
+        free(positions);
+        free(previous_positions);
+        free(velocitiesV);
+        free(orbits);
+        free(periods);
+        return -1;
+    }
     initialize_variables(positions, previous_positions, velocitiesV, orbits, periods, num_planets, planet_data);
 
     // Simulación utilizando el algoritmo de Verlet en velocidad
-    double acc[num_planets][2];
+    double (*acc)[2] = malloc(num_planets * sizeof(*acc));
+    if (acc == NULL) {
+        printf("Error al reservar memoria para las aceleraciones\n");
+        free(planet_data);
+        free(positions);
+        free(previous_positions);
+        free(velocitiesV);
+        free(orbits);
+        free(periods);
+        return -1;
+    }
     double V;      // Potencial gravitatorio
     double T;      // Energía cinética
     double E;      // Energía total
@@ -151,6 +193,18 @@ int main() {
     FILE *f3 = fopen("momangplanetas.dat", "w");
     FILE *f4 = fopen("geocent.dat", "w");
     FILE *f5 = fopen("periodos.dat", "w");
+    FILE *f6 = fopen("tiempo_ejecucion.txt", "w"); // para obtener el tiempo que tarda en ejecutarse
+    if (f == NULL || f2 == NULL || f3 == NULL || f4 == NULL || f5 == NULL || f6 == NULL) {
+        printf("Error al abrir archivos de escritura\n");
+        free(planet_data);
+        free(positions);
+        free(previous_positions);
+        free(velocitiesV);
+        free(orbits);
+        free(periods);
+        free(acc);
+        return -1;
+    }
 
     // Calculamos la aceleración inicial (t=0.0)
     acceleration(positions, acc, num_planets, planet_data);
@@ -218,14 +272,29 @@ int main() {
         t += h;
     }
 
-    // Cerramos los archivos de escritura
+     // Marcamos el tiempo de finalización
+    end_time = clock();
+
+     // Calculamos el tiempo total de compilación
+    total_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+
+    // Imprimimos el tiempo total de compilación
+    fprintf(f6, "planetas+Sol: %-4d Tiempo de ejecución: %.4f\n", num_planets, total_time);
+
+    // Liberar memoria y cerrar archivos
+    free(planet_data);
+    free(positions);
+    free(previous_positions);
+    free(velocitiesV);
+    free(orbits);
+    free(periods);
+    free(acc);
     fclose(f);
     fclose(f2);
     fclose(f3);
     fclose(f4);
     fclose(f5);
+    fclose(f6);
 
     return 0;
 }
-
-
