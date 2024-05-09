@@ -17,11 +17,12 @@ fcomplex A[MAX], b[MAX], alpha[MAX], beta[MAX], chi[MAX]; // Coeficientes
 int main() {
 
     // Para observar los tiempos de compilación
-
+    
     clock_t start_time, end_time;
     double total_time;
 
     // Marcamos el tiempo de inicio
+
     start_time = clock();
 
     // Abrimos los ficheros de salida
