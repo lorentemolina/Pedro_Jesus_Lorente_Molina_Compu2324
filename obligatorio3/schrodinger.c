@@ -38,10 +38,10 @@ int main() {
 
     // Definimos los parámetros iniciales
 
-    iter = 10000; // Nº de iteraciones temporales 10000
-    N = 400; // Divisiones del eje x 500
+    iter = 5000; // Nº de iteraciones temporales 
+    N = 400; // Divisiones del eje x 
     n_ciclos = 100; // Ciclos que se realizan
-    lambda = 0.3; // Parámetro lambda (Altura del potencial) 0.8
+    lambda = 0.6; // Parámetro lambda (Altura del potencial) 
     k = 2 * PI * (double)n_ciclos / (double)N; // Factor k reescalado
     s = 1 / (4 * k * k); // Espaciado temporal reescalado
     fcomplex i = Complex(0, 1); // imaginario i
@@ -71,7 +71,7 @@ int main() {
 
     for (int j = 0; j < N; j++) {
         fonda[j] = Cdiv(fonda[j], Complex(sqrt((norm)), 0)); // dividiendo por la norma
-        fprintf(modfonda, "%d, %.15lf\n", j, Cabs(fonda[j])); // Escritura de la función de onda normalizada en cada punto j del eje x
+        fprintf(modfonda, "%d, %.15lf,%.15lf\n", j, Cabs(fonda[j]), V[j]); // Escritura de la función de onda normalizada en cada punto j del eje x
     }
     fprintf(modfonda, "\n"); // para separar iteraciones
 
@@ -106,7 +106,7 @@ int main() {
 
         fprintf(normfonda, "%d\t%.15lf\n", t, sqrt(norm)); // Escritura en un fichero de la raíz de la norma al cuadrado para cada iteración
         for (int j = 0; j < N; j++) {
-         fprintf(modfonda, "%d, %.15lf\n", j, Cabs(fonda[j]));
+         fprintf(modfonda, "%d, %.15lf, %.15lf\n", j, Cabs(fonda[j]), V[j]);
         } // Escritura en un fichero del módulo de la función de onda
         fprintf(modfonda, "\n"); // Separación de las funciones de onda
 

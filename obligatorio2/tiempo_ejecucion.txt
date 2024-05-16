@@ -1,1 +1,1 @@
-dim: 80   Tiempo de ejecución: 0.4350
+dim: 100  Tiempo de ejecución: 0.6140

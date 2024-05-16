@@ -48,12 +48,15 @@ import io
 # Parámetros
 # ========================================
 file_in = "ising_data.dat" # Nombre del fichero de datos
-file_out = "ising" # Nombre del fichero de salida (sin extensión)
+file_out = "modelo_ising" # Nombre del fichero de salida (sin extensión)
 interval = 100 # Tiempo entre fotogramas en milisegundos
-save_to_file = False # False: muestra la animación por pantalla,
-                     # True: la guarda en un fichero
+save_to_file = True # True: guarda la animación en un fichero
 dpi = 150 # Calidad del vídeo de salida (dots per inch)
 
+# Valores de dim, iter y T
+dim = 100  # Dimensiones del retículo
+iter = 200  # Número de iteraciones
+T = 2.2  # Temperatura
 
 # Lectura del fichero de datos
 # ========================================
@@ -104,14 +107,15 @@ if nframes > 1:
             fig, update,
             fargs=(frames_data, im), frames=len(frames_data), blit=True, interval=interval)
 
-    # Muestra por pantalla o guarda según parámetros
-    if save_to_file:
-        animation.save("{}.mp4".format(file_out), dpi=dpi)
-    else:
-        plt.show()
-# En caso contrario, muestra o guarda una imagen
+    # Agrega la leyenda con los parámetros
+    plt.text(0.02, 0.98, f"Dim: {dim}", transform=ax.transAxes, fontsize=8, color='white', backgroundcolor='black', alpha=0.7)
+    plt.text(0.02, 0.94, f"Iter: {iter}", transform=ax.transAxes, fontsize=8, color='white', backgroundcolor='black', alpha=0.7)
+    plt.text(0.02, 0.90, f"T: {T}", transform=ax.transAxes, fontsize=8, color='white', backgroundcolor='black', alpha=0.7)
+
+    # Guarda la animación en un fichero
+    animation.save("{}.mp4".format(file_out), dpi=dpi)
 else:
-    # Muestra por pantalla o guarda según parámetros
+    # En caso contrario, muestra o guarda una imagen
     if save_to_file:
         fig.savefig("{}.pdf".format(file_out))
     else:

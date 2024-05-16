@@ -43,6 +43,13 @@ from matplotlib.animation import FuncAnimation
 import numpy as np
 import io
 
+# Parámetros de la simulación
+# ========================================
+iter = 10000; # Nº de iteraciones temporales 10000
+N = 400; # Divisiones del eje x 500
+n_ciclos = 100; # Ciclos que se realizan
+lambda_value = 0.6; # Parámetro lambda (Altura del potencial) 0.8
+
 # Parámetros
 # ========================================
 file_in = "schrodinger_data.dat" # Nombre del fichero de datos
@@ -119,6 +126,10 @@ if nframes > 1:
     animation = FuncAnimation(
             fig, update,
             fargs=(frames_data, lines), frames=len(frames_data), blit=True, interval=interval)
+    
+    # Agrega la leyenda con los valores de los parámetros en la esquina superior derecha
+    legend_text = f"Iteraciones: {iter}\nDivisiones del eje x: {N}\nCiclos realizados: {n_ciclos}\nLambda = {lambda_value}"
+    ax.text(0.98, 0.98, legend_text, transform=ax.transAxes, fontsize=8, verticalalignment='top', horizontalalignment='right')
 
     # Muestra por pantalla o guarda según parámetros
     if save_to_file:

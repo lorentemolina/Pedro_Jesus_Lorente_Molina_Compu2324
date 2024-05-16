@@ -4,7 +4,7 @@
 #include <time.h>
 #include <omp.h>
 
-#define dim 80 // Dimensiones del retículo
+#define dim 100 // Dimensiones del retículo
 #define iter 200 // Número de iteraciones
 #define T 2.2 //Temperatura
 
