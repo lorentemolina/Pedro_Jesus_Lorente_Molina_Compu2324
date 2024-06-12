@@ -49,7 +49,7 @@ int main() {
     // Cálculo del potencial
 
     for (int j = 0; j < N; j++) {
-        if ((j < 3 * N / 5) && (j > 2 * N / 5)) V[j] = lambda * k * k; // Potencial de altura lambda*k*k
+        if ((j < 3 * N / 5) && (j > N/2)) V[j] = lambda * k * k; // Potencial de altura lambda*k*k
         else V[j] = 0.0; // Potencial nulo fuera del rango definido
         fprintf(poten, "%.15lf\n", V[j]); // Escritura en un fichero del potencial
     }

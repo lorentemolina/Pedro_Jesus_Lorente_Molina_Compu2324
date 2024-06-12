@@ -1,0 +1,36 @@
+
+
+*******************************************************************************
+Wed Jun 12 12:25:20 2024
+
+
+FIT:    data read from 'lyapunov_energy.txt' using 1:2
+        format = x:z
+        #datapoints = 5
+        residuals are weighted equally (unit weight)
+
+function used for fitting: f(x)
+	f(x) = a * x + b
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b            
+   0 3.0862003324e+02   0.00e+00  1.46e+00    1.000000e+00   1.000000e+00
+   4 1.9240494683e-02  -1.07e-03  1.46e-04    2.789266e-01  -5.713118e+00
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 0.0192405
+rel. change during last iteration : -1.07187e-08
+
+degrees of freedom    (FIT_NDF)                        : 3
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.0800843
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0064135
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a               = 0.278927         +/- 0.03768      (13.51%)
+b               = -5.71312         +/- 0.06831      (1.196%)
+
+correlation matrix of the fit parameters:
+                a      b      
+a               1.000 
+b              -0.852  1.000 
